@@ -9,7 +9,8 @@ function imageOut(state) {
  imageToAscii(`https://www.metaweather.com/static/img/weather/png/${state}.png`, {
     size: { height: 10}
   }, (err, converted) => {
-    console.log(err || converted);
+    var out = console.log(err || converted);
+    return out;
   });
 
 }
@@ -54,7 +55,7 @@ function weatherState(state) {
 function loopFiveDays(fiveDays) {
 
   const items = [
-                  ['Day', 'Date', 'Max temp', 'Min temp', 'Humidity', 'Consensus', 'Weather state', 'Look'],
+                  ['Day', 'Date', 'Max temp', 'Min temp', 'Humidity', 'Consensus'],
                   [],
                   [],
                   [],
@@ -63,6 +64,8 @@ function loopFiveDays(fiveDays) {
                   [],
                 ]
 
+                console.log("Return of imageOut()");
+                console.log(imageOut(state));
 
 
     for (var i = 0; i < fiveDays.length; i++) {
@@ -75,7 +78,7 @@ function loopFiveDays(fiveDays) {
       items[i + 1].push(fiveDays[i].humidity);
       items[i + 1].push(fiveDays[i].predictability);
       items[i + 1].push(fiveDays[i].weather_state_name);
-      items[i + 1].push(imageOut(state));
+      // items[i + 1].push(imageOut(state));
     // console.log(`Day: ${i + 1}, the ${fiveDays[i].applicable_date}`);
     // console.log('Weather: ' + fiveDays[i].weather_state_name);
     // console.log('Max temperature: ' + fiveDays[i].max_temp);
