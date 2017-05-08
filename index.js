@@ -6,12 +6,16 @@ const imageToAscii = require("image-to-ascii");
 // converts image to ascii
 function imageOut(state) {
 
- imageToAscii(`https://www.metaweather.com/static/img/weather/png/${state}.png`, {
-    size: { height: 10}
-  }, (err, converted) => {
-    var out = console.log(err || converted);
-    return out;
-  });
+for (var i = 0; i < state.length; i++) {
+  var day = i;
+  imageToAscii(`https://www.metaweather.com/static/img/weather/png/${state[i]}.png`, {
+    //  size: { height: 10}
+   }, (err, converted) => {
+     console.log(`Day ${day}`);
+     console.log(err || converted);
+   });
+}
+
 
 }
 
@@ -19,31 +23,31 @@ function imageOut(state) {
 function weatherState(state) {
 
   switch (state) {
-    case 'snow':
+    case 'Snow':
       return 'sn'
       break;
-    case 'hail':
+    case 'Hail':
       return 'h'
       break;
-    case 'thunderstorm':
+    case 'Thunderstorm':
       return 't'
       break;
-    case 'heavy rain':
+    case 'Heavy Rain':
       return 'hr'
       break;
-    case 'light rain':
+    case 'Light Rain':
       return 'lr'
       break;
-    case 'showers':
+    case 'Showers':
       return 's'
       break;
-    case 'heavy cloud':
+    case 'Heavy Cloud':
       return 'hc'
       break;
-    case 'light cloud':
+    case 'Light Cloud':
       return 'lc'
       break;
-    case 'clear':
+    case 'Clear':
       return 'c'
       break;
 
@@ -55,7 +59,7 @@ function weatherState(state) {
 function loopFiveDays(fiveDays) {
 
   const items = [
-                  ['Day', 'Date', 'Max temp', 'Min temp', 'Humidity', 'Consensus'],
+                  ['Day', 'Date', 'Weather state', 'Min temp', 'Max temp', 'Humidity', 'Consensus'],
                   [],
                   [],
                   [],
@@ -63,34 +67,28 @@ function loopFiveDays(fiveDays) {
                   [],
                   [],
                 ]
-
-                console.log("Return of imageOut()");
-                console.log(imageOut(state));
+    const state = [];
+                // console.log("Return of imageOut()");
+                // console.log(imageOut(state));
 
 
     for (var i = 0; i < fiveDays.length; i++) {
-      var state = weatherState((fiveDays[i].weather_state_name).toLowerCase());
-      console.log(state);
+      state.push(weatherState(fiveDays[i].weather_state_name));
       items[i + 1].push(i + 1);
       items[i + 1].push(fiveDays[i].applicable_date);
-      items[i + 1].push((fiveDays[i].max_temp).toFixed(2));
+      items[i + 1].push(fiveDays[i].weather_state_name);
       items[i + 1].push((fiveDays[i].min_temp).toFixed(2));
+      items[i + 1].push((fiveDays[i].max_temp).toFixed(2));
       items[i + 1].push(fiveDays[i].humidity);
       items[i + 1].push(fiveDays[i].predictability);
-      items[i + 1].push(fiveDays[i].weather_state_name);
-      // items[i + 1].push(imageOut(state));
-    // console.log(`Day: ${i + 1}, the ${fiveDays[i].applicable_date}`);
-    // console.log('Weather: ' + fiveDays[i].weather_state_name);
-    // console.log('Max temperature: ' + fiveDays[i].max_temp);
-    // console.log('Min temperature: ' + fiveDays[i].min_temp);
-    // console.log('Humidity: ' + fiveDays[i].humidity);
-    // console.log('Consensus: ' + fiveDays[i].predictability);
   };
 
 
   // makes a table of the 5 day forcast
   const res = AsciiTable.table(items)
   console.log(res);
+  
+  getImages(state)
 
 
 };
@@ -110,31 +108,43 @@ axios.get(`https://www.metaweather.com/api/location/${woeid}`)
 
 };
 
-getWeather(1105779);
+// getWeather(1105779);
 
 // gets the woeid of the location entered by user
-// function getLocation(location) {
-//
-// axios.get(`https://www.metaweather.com/api/location/search/?query=${location}`)
-//   .then(function (response) {
-//     var woeid = response.data[0].woeid;
-//     console.log(woeid);
-//     getWeather(1105779);
-//   })
-//   .catch(function (error) {
-//     console.log(error);
-//   });
-//
-// };
+function getLocation(location) {
 
-// console.log("Welcome to terminal weather");
-// console.log("Please enter the city: ");
+axios.get(`https://www.metaweather.com/api/location/search/?query=${location}`)
+  .then(function (response) {
+    var woeid = response.data[0].woeid;
+    getWeather(woeid);
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
 
+};
 
-// start prompt
+function getImages(state) {
 
-// prompt.get(['location'], function (err, result) {
-//     getLocation(result.location);
-// });
+  // start prompt
+
+  console.log("Would you like a graphical display of the weather? ");
+  prompt.get(['response'], function (err, result) {
+      if (result.response === "yes") {
+        imageOut(state)
+      } else {
+        "Thank-you, enjoy your weather filled week!"
+      }
+  });
+}
+
+console.log("Welcome to terminal weather");
+console.log("Please enter the city: ");
+
+prompt.get(['location'], function (err, result) {
+    console.log("Collecting weather data to display...");
+    getLocation(result.location);
+});
+
 
 // do we include the node module's folder?? NO, put it in the git ignore.
