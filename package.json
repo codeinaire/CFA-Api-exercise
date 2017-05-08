@@ -1,0 +1,16 @@
+{
+  "name": "api_chal",
+  "version": "1.0.0",
+  "description": "class challenge to access api through node.",
+  "main": "index.js",
+  "author": "John Codeinaire",
+  "license": "MIT",
+  "dependencies": {
+    "ascii-data-table": "^2.1.1",
+    "axios": "^0.16.1",
+    "image-to-ascii": "^3.0.7",
+    "imaging": "^2.1.2",
+    "prompt": "^1.0.0",
+    "term-img": "^1.0.0"
+  }
+}
