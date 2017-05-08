@@ -3,7 +3,18 @@ const prompt = require('prompt');
 const AsciiTable = require('ascii-data-table').default
 const imageToAscii = require("image-to-ascii");
 
+// converts image to ascii
+function imageOut(state) {
 
+ imageToAscii(`https://www.metaweather.com/static/img/weather/png/${state}.png`, {
+    size: { height: 10}
+  }, (err, converted) => {
+    console.log(err || converted);
+  });
+
+}
+
+// converts weather state into abbreviation for use in imageOut
 function weatherState(state) {
 
   switch (state) {
@@ -39,7 +50,7 @@ function weatherState(state) {
 
 }
 
-
+// loops through the five day forcast pushing into array
 function loopFiveDays(fiveDays) {
 
   const items = [
@@ -52,16 +63,19 @@ function loopFiveDays(fiveDays) {
                   [],
                 ]
 
-    var state = weatherState((fiveDays[i].weather_state_name).toLowerCase())
+
 
     for (var i = 0; i < fiveDays.length; i++) {
-    items[i + 1].push(i + 1);
-    items[i + 1].push(fiveDays[i].applicable_date);
-    items[i + 1].push(fiveDays[i].weather_state_name);
-    items[i + 1].push((fiveDays[i].max_temp).toFixed(2));
-    items[i + 1].push((fiveDays[i].min_temp).toFixed(2));
-    items[i + 1].push(fiveDays[i].humidity);
-    items[i + 1].push(fiveDays[i].predictability);
+      var state = weatherState((fiveDays[i].weather_state_name).toLowerCase());
+      console.log(state);
+      items[i + 1].push(i + 1);
+      items[i + 1].push(fiveDays[i].applicable_date);
+      items[i + 1].push((fiveDays[i].max_temp).toFixed(2));
+      items[i + 1].push((fiveDays[i].min_temp).toFixed(2));
+      items[i + 1].push(fiveDays[i].humidity);
+      items[i + 1].push(fiveDays[i].predictability);
+      items[i + 1].push(fiveDays[i].weather_state_name);
+      items[i + 1].push(imageOut(state));
     // console.log(`Day: ${i + 1}, the ${fiveDays[i].applicable_date}`);
     // console.log('Weather: ' + fiveDays[i].weather_state_name);
     // console.log('Max temperature: ' + fiveDays[i].max_temp);
@@ -70,22 +84,15 @@ function loopFiveDays(fiveDays) {
     // console.log('Consensus: ' + fiveDays[i].predictability);
   };
 
-  imageToAscii("https://www.metaweather.com/static/img/weather/png/s.png", {
-    size: { height: 10}
-  }, (err, converted) => {
-    console.log(err || converted);
-});
 
-
-  console.log('https://www.metaweather.com/static/img/weather/s.svg');
-  console.log(items[0]);
+  // makes a table of the 5 day forcast
   const res = AsciiTable.table(items)
   console.log(res);
 
 
 };
 
-
+// gets the 5 day weather forcast of the woeid
 function getWeather(woeid) {
 
 axios.get(`https://www.metaweather.com/api/location/${woeid}`)
@@ -102,6 +109,7 @@ axios.get(`https://www.metaweather.com/api/location/${woeid}`)
 
 getWeather(1105779);
 
+// gets the woeid of the location entered by user
 // function getLocation(location) {
 //
 // axios.get(`https://www.metaweather.com/api/location/search/?query=${location}`)
